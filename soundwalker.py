@@ -65,12 +65,6 @@ def is_good_disc_name(name):
 
         return False
 
-    try:
-        int(folderNameMatch.group('disc'))
-    except ValueError:
-        print("Folder '{}' does not contain valid disc value: {}.".format(name, folderNameMatch.group('disc')))
-        return False
-
     return True
 
 if __name__ == '__main__':
