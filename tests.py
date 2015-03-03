@@ -1,0 +1,23 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import soundwalker
+
+
+def test_album_name():
+    assert not soundwalker.is_good_album_name(' Bla')
+    assert not soundwalker.is_good_album_name('Bla ')
+    assert not soundwalker.is_good_album_name(' Bla ')
+
+    assert soundwalker.is_good_album_name('Correctly Named (2015)')
+
+
+def test_disc_folder_nanimg():
+    assert not soundwalker.is_good_disc_name('something')
+    assert not soundwalker.is_good_disc_name('foo 123')
+    assert not soundwalker.is_good_disc_name('disc 1')
+    assert soundwalker.is_good_disc_name('CD 578')
+
+    assert not soundwalker.is_good_disc_name('CD 1 -')
+    assert soundwalker.is_good_disc_name("CD 7 - Additional Description")
+    assert soundwalker.is_good_disc_name('CD 654 - Additional Stuff')
