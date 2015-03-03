@@ -19,6 +19,17 @@ def walk(path, directories, filenames, is_artist=False, is_album=False):
 
 
 def is_good_album_name(name, multi_disc_collection=False):
+    if not name_must_not_be_stripped(name):
+        return False
+
+    if '(' not in name and ')' not in name:
+        print("Folder '{}' misses attributes - i.e. year.".format(name))
+        return False
+
+    return True
+
+
+def name_must_not_be_stripped(name):
     if not name == name.strip():
         if name.endswith(' ') and name.endswith(' '):
             print("Folder '{}' has spaces at front and end.".format(name))
