@@ -4,6 +4,15 @@
 import soundwalker
 
 
+def test_file_name():
+    assert not soundwalker.is_good_file('foo.pdb')
+
+    assert soundwalker.is_good_file('foo.mp3')
+    assert soundwalker.is_good_file('foo.ogg')
+
+    assert not soundwalker.is_good_file('foo.mp3.orig')
+
+
 def test_album_name():
     assert not soundwalker.is_good_album_name(' Bla')
     assert not soundwalker.is_good_album_name('Bla ')

@@ -6,16 +6,37 @@ import re
 SOUND_FILE_EXTENSIONS = set(['.mp3', '.cue', '.flac', '.ogg', '.m3u'])
 COVER_FILE_EXTENSIONS = set(['.jpg', '.jpeg'])
 
-
-def walk(path, directories, filenames, is_artist=False, is_album=False):
-    if is_artist:
-        for filename in filenames:
-            if not filename.endswith(SOUND_FILE_EXTENSIONS):
-                print("Additional file: {}".format(os.path.join(path, filename)))
+_VALID_FILE_EXTENSIONS = tuple(SOUND_FILE_EXTENSIONS.union(COVER_FILE_EXTENSIONS))
 
 
+def walk(path, *, is_artist=False, is_album=False):
+    process_artist = False
+    process_albums = False
     for (dirpath, directories, filenames) in os.walk(path):
-        pass
+        for filename in filenames:
+            # TODO: handle files inside multi-disc-album
+            is_good_file(filename)
+
+        for directory in directories:
+            if is_artist:
+                is_good_album_name(directory)
+                process_albums = True
+            elif is_album:
+                is_good_disc_name(directory)
+            else:
+                process_artist = True
+
+            walk(os.path.join(dirpath, directory),
+                 is_artist=process_artist,
+                 is_album=process_albums)
+
+
+def is_good_file(name):
+    if not name.endswith(_VALID_FILE_EXTENSIONS):
+        print("Additional file: {}".format(name))
+        return False
+
+    return True
 
 
 def is_good_album_name(name):
