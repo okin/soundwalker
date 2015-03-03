@@ -40,30 +40,28 @@ def name_must_not_be_stripped(name):
 
         return False
 
-    if '(' not in name and ')' not in name:
-        print("Folder '{}' misses attributes - i.e. year.".format(name))
-        return False
-
     return True
 
 
 def is_good_disc_name(name):
+    if not name_must_not_be_stripped(name):
+        return False
+
     if not name.startswith('CD'):
         print("Folder '{}' does not start with 'CD'.".format(name))
         return False
 
-    try:
-        int(name[-1:])
-    except ValueError:
-        print("Folder '{}' does not end with a number.".format(name))
-        return False
-
-    folderNameMatch = re.search('^CD (?P<disc>\d+)( - (?P<additional>.+)){0,1}',
+    folderNameMatch = re.search('^CD (?P<disc>\d+)( - (?P<additional>.+)){0,1}$',
                                 name)
 
     if not folderNameMatch:
         print("Folder '{}' does not follow disc pattern: "
               "CD 7 - Additional Description")
+
+        try:
+            int(name[-1:])
+        except ValueError:
+            print("Folder '{}' does not end with a number.".format(name))
 
         return False
 

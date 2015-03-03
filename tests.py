@@ -13,6 +13,7 @@ def test_album_name():
 
 
 def test_disc_folder_nanimg():
+    assert not soundwalker.is_good_disc_name(' CD 3 ')
     assert not soundwalker.is_good_disc_name('something')
     assert not soundwalker.is_good_disc_name('foo 123')
     assert not soundwalker.is_good_disc_name('disc 1')
