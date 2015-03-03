@@ -20,5 +20,4 @@ def test_disc_folder_nanimg():
     assert soundwalker.is_good_disc_name('CD 578')
 
     assert not soundwalker.is_good_disc_name('CD 1 -')
-    assert soundwalker.is_good_disc_name("CD 7 - Additional Description")
-    assert soundwalker.is_good_disc_name('CD 654 - Additional Stuff')
+    assert soundwalker.is_good_disc_name("CD 75 - Additional Description")
