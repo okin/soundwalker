@@ -18,7 +18,7 @@ def walk(path, directories, filenames, is_artist=False, is_album=False):
         pass
 
 
-def is_good_album_name(name, multi_disc_collection=False):
+def is_good_album_name(name):
     if not name_must_not_be_stripped(name):
         return False
 

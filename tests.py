@@ -11,6 +11,8 @@ def test_album_name():
 
     assert soundwalker.is_good_album_name('Correctly Named (2015)')
 
+    assert soundwalker.is_good_album_name('Double (2CD) (1989)')
+
 
 def test_disc_folder_nanimg():
     assert not soundwalker.is_good_disc_name(' CD 3 ')
