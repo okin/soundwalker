@@ -36,6 +36,12 @@ def is_good_file(name):
         print("Additional file: {}".format(name))
         return False
 
+    filenameMatch = re.match('^(?P<tracknumber>\d+)-(?P<artist>[a-zA-Z0-9_]+)-(?P<title>[a-zA-Z0-9_]+)\.(?P<fileextension>[a-zA-Z0-9]+)$', name)
+    if filenameMatch is None:
+        print("Filename does not match the expected pattern: "
+              "02-Artist_A-Title_T.mp3")
+        return False
+
     return True
 
 

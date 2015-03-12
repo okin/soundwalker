@@ -6,11 +6,11 @@ import soundwalker
 
 def test_file_name():
     assert not soundwalker.is_good_file('foo.pdb')
-
-    assert soundwalker.is_good_file('foo.mp3')
-    assert soundwalker.is_good_file('foo.ogg')
-
     assert not soundwalker.is_good_file('foo.mp3.orig')
+
+    assert not soundwalker.is_good_file('01 - titel.mp3')
+    assert soundwalker.is_good_file('05-Cool_Artist-Song_B.ogg')
+    assert soundwalker.is_good_file('05-cool_artist-song_b.mp3')
 
 
 def test_album_name():
@@ -19,7 +19,6 @@ def test_album_name():
     assert not soundwalker.is_good_album_name(' Bla ')
 
     assert soundwalker.is_good_album_name('Correctly Named (2015)')
-
     assert soundwalker.is_good_album_name('Double (2CD) (1989)')
 
 
