@@ -31,3 +31,8 @@ def test_disc_folder_nanimg():
 
     assert not soundwalker.is_good_disc_name('CD 1 -')
     assert soundwalker.is_good_disc_name("CD 75 - Additional Description")
+
+
+def test_finding_duplicates():
+    assert soundwalker.exist_duplicate_files(('01-a.mp3', '01-A.mp3'))
+    assert soundwalker.exist_duplicate_files(['01-b.mp3', '01-a.mp3'])

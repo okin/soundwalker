@@ -18,6 +18,9 @@ def walk(path, *, is_artist=False, is_album=False):
             # TODO: handle files inside multi-disc-album
             is_good_file(filename)
 
+        if is_album:
+            exist_duplicate_files(filenames)
+
         for directory in directories:
             if is_artist:
                 is_good_album_name(directory)
@@ -44,6 +47,32 @@ def is_good_file(name):
         return False
 
     return True
+
+
+def exist_duplicate_files(filenames):
+    if not len(filenames) == len(set(name.lower() for name in filenames)):
+        return True
+
+    duplicate_numbers = set()
+    track_numbers = {}
+    for name in filenames:
+        try:
+            match = _FILENAME_REGEX.match(name)
+            number = int(match.group('tracknumber'))
+        except AttributeError:
+            try:
+                number = int(name.split('-')[0])
+            except (ValueError, IndexError):
+                print("Unable to get track# for {0}".format(name))
+                number = 0
+
+        if number in track_numbers:
+            print("Duplicate track number '{num}'' on files '{0}' and {1}".format(track_numbers[number], name, num=number))
+            duplicate_numbers.add(number)
+        else:
+            track_numbers[number] = name
+
+    return bool(duplicate_numbers)
 
 
 def is_good_album_name(name):
