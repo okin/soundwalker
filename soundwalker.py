@@ -7,6 +7,7 @@ SOUND_FILE_EXTENSIONS = set(['.mp3', '.cue', '.flac', '.ogg', '.m3u'])
 COVER_FILE_EXTENSIONS = set(['.jpg', '.jpeg'])
 
 _VALID_FILE_EXTENSIONS = tuple(SOUND_FILE_EXTENSIONS.union(COVER_FILE_EXTENSIONS))
+_FILENAME_REGEX = re.compile('^(?P<tracknumber>\d+)-(?P<artist>[a-zA-Z0-9_]+)-(?P<title>[a-zA-Z0-9_]+)\.(?P<fileextension>[a-zA-Z0-9]+)$')
 
 
 def walk(path, *, is_artist=False, is_album=False):
@@ -36,7 +37,7 @@ def is_good_file(name):
         print("Additional file: {}".format(name))
         return False
 
-    filenameMatch = re.match('^(?P<tracknumber>\d+)-(?P<artist>[a-zA-Z0-9_]+)-(?P<title>[a-zA-Z0-9_]+)\.(?P<fileextension>[a-zA-Z0-9]+)$', name)
+    filenameMatch = _FILENAME_REGEX.match(name)
     if filenameMatch is None:
         print("Filename does not match the expected pattern: "
               "02-Artist_A-Title_T.mp3")
