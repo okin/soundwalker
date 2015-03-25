@@ -67,7 +67,9 @@ def exist_duplicate_files(filenames):
                 number = 0
 
         if number in track_numbers:
-            print("Duplicate track number '{num}'' on files '{0}' and {1}".format(track_numbers[number], name, num=number))
+            print("Duplicate track number '{num}' on files "
+                  "'{0}' and {1}".format(track_numbers[number],
+                                         name, num=number))
             duplicate_numbers.add(number)
         else:
             track_numbers[number] = name
