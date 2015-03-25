@@ -2,6 +2,7 @@
 
 import os
 import re
+import sys
 
 SOUND_FILE_EXTENSIONS = set(['.mp3', '.cue', '.flac', '.ogg', '.m3u'])
 COVER_FILE_EXTENSIONS = set(['.jpg', '.jpeg'])
@@ -127,5 +128,9 @@ def is_good_disc_name(name):
     return True
 
 if __name__ == '__main__':
-    # TODO: read argv
-    walk()
+    try:
+        path = sys.argv[1]
+    except IndexError:
+        path = '.'
+
+    walk(path)
