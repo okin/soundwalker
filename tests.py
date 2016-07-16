@@ -12,6 +12,7 @@ import pytest
     pytest.mark.xfail('foo.pdb'),
     pytest.mark.xfail('foo.mp3.orig'),
     pytest.mark.xfail('01 - titel.mp3'),
+    '02-Anthrax-Bring_The_Noise_(Feat._Public_Enemy).mp3',
 ])
 def test_good_filename(filename):
     assert soundwalker.is_good_file(filename)
