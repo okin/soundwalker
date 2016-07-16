@@ -3,36 +3,47 @@
 
 import soundwalker
 
-
-def test_file_name():
-    assert not soundwalker.is_good_file('foo.pdb')
-    assert not soundwalker.is_good_file('foo.mp3.orig')
-
-    assert not soundwalker.is_good_file('01 - titel.mp3')
-    assert soundwalker.is_good_file('05-Cool_Artist-Song_B.ogg')
-    assert soundwalker.is_good_file('05-cool_artist-song_b.mp3')
+import pytest
 
 
-def test_album_name():
-    assert not soundwalker.is_good_album_name(' Bla')
-    assert not soundwalker.is_good_album_name('Bla ')
-    assert not soundwalker.is_good_album_name(' Bla ')
-
-    assert soundwalker.is_good_album_name('Correctly Named (2015)')
-    assert soundwalker.is_good_album_name('Double (2CD) (1989)')
-
-
-def test_disc_folder_nanimg():
-    assert not soundwalker.is_good_disc_name(' CD 3 ')
-    assert not soundwalker.is_good_disc_name('something')
-    assert not soundwalker.is_good_disc_name('foo 123')
-    assert not soundwalker.is_good_disc_name('disc 1')
-    assert soundwalker.is_good_disc_name('CD 578')
-
-    assert not soundwalker.is_good_disc_name('CD 1 -')
-    assert soundwalker.is_good_disc_name("CD 75 - Additional Description")
+@pytest.mark.parametrize("filename", [ 
+    '05-Cool_Artist-Song_B.ogg',
+    '05-cool_artist-song_b.mp3',
+    pytest.mark.xfail('foo.pdb'),
+    pytest.mark.xfail('foo.mp3.orig'),
+    pytest.mark.xfail('01 - titel.mp3'),
+])
+def test_good_filename(filename):
+    assert soundwalker.is_good_file(filename)
 
 
-def test_finding_duplicates():
-    assert soundwalker.exist_duplicate_files(('01-a.mp3', '01-A.mp3'))
-    assert soundwalker.exist_duplicate_files(['01-b.mp3', '01-a.mp3'])
+@pytest.mark.parametrize("name", [
+    pytest.mark.xfail(' Bla'),
+    pytest.mark.xfail('Bla '),
+    pytest.mark.xfail(' Bla '),
+    'Correctly Named (2015)',
+    'Double (2CD) (1989)',
+])
+def test_album_name(name):
+    assert soundwalker.is_good_album_name(name)
+
+
+@pytest.mark.parametrize("name", [
+    pytest.mark.xfail(' CD 3 '),
+    pytest.mark.xfail('something'),
+    pytest.mark.xfail('foo 123'),
+    pytest.mark.xfail('disc 1'),
+    pytest.mark.xfail('CD 1 -'),
+    'CD 578',
+    "CD 75 - Additional Description",
+])
+def test_disc_folder_nanimg(name):
+    assert soundwalker.is_good_disc_name(name)
+
+
+@pytest.mark.parametrize("filenames", [
+    ('01-a.mp3', '01-A.mp3'),
+    ['01-b.mp3', '01-a.mp3'],
+])
+def test_finding_duplicates(filenames):
+    assert soundwalker.exist_duplicate_files(filenames)
