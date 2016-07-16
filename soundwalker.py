@@ -43,8 +43,8 @@ def is_good_file(name):
 
     filenameMatch = _FILENAME_REGEX.match(name)
     if filenameMatch is None:
-        print("Filename does not match the expected pattern: "
-              "02-Artist_A-Title_T.mp3")
+        print("Filename {0!r} does not match the expected pattern: "
+              "02-Artist_A-Title_T.mp3".format(name))
         return False
 
     return True
