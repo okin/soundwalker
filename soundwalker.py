@@ -6,9 +6,9 @@ import re
 import sys
 
 SOUND_FILE_EXTENSIONS = set(['.mp3', '.cue', '.flac', '.ogg', '.m3u'])
-COVER_FILE_EXTENSIONS = set(['.jpg', '.jpeg'])
+COVER_FILE_EXTENSIONS = ('.jpg', '.jpeg')
 
-_VALID_FILE_EXTENSIONS = tuple(SOUND_FILE_EXTENSIONS.union(COVER_FILE_EXTENSIONS))
+_VALID_FILE_EXTENSIONS = tuple(SOUND_FILE_EXTENSIONS.union(set(COVER_FILE_EXTENSIONS)))
 _FILENAME_REGEX = re.compile('^(?P<tracknumber>\d+)-(?P<artist>[a-zA-Z0-9_]+)-(?P<title>[a-zA-Z0-9_().-]+)\.(?P<fileextension>[a-zA-Z0-9]+)$')
 
 
@@ -28,6 +28,9 @@ def walk(path, *, is_artist=False, is_album=False):
     for (dirpath, directories, filenames) in os.walk(path):
         for filename in filenames:
             # TODO: handle files inside multi-disc-album
+            if filename.endswith(COVER_FILE_EXTENSIONS):
+                continue
+
             is_good_file(filename)
 
         if is_album:
