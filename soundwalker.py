@@ -68,8 +68,8 @@ def exist_duplicate_files(filenames):
                 number = 0
 
         if number in track_numbers:
-            print("Duplicate track number '{num}' on files "
-                  "'{0}' and {1}".format(track_numbers[number],
+            print("Duplicate track number {num!r} on files "
+                  "{0!r} and {1}".format(track_numbers[number],
                                          name, num=number))
             duplicate_numbers.add(number)
         else:
@@ -82,8 +82,8 @@ def is_good_album_name(name):
     if not name_must_not_be_stripped(name):
         return False
 
-    if '(' not in name and ')' not in name:
-        print("Folder '{}' misses attributes - i.e. year.".format(name))
+    if '(' not in name or ')' not in name:
+        print("Folder {!r} misses attributes - i.e. year.".format(name))
         return False
 
     return True
@@ -92,11 +92,11 @@ def is_good_album_name(name):
 def name_must_not_be_stripped(name):
     if not name == name.strip():
         if name.endswith(' ') and name.endswith(' '):
-            print("Folder '{}' has spaces at front and end.".format(name))
+            print("Folder {!r} has spaces at front and end.".format(name))
         elif name.startswith(' '):
-            print("Folder '{}' has spaces at front.".format(name))
+            print("Folder {!r} has spaces at front.".format(name))
         elif name.endswith(' '):
-            print("Folder '{}' has spaces at end.".format(name))
+            print("Folder {!r} has spaces at end.".format(name))
 
         return False
 
@@ -108,20 +108,20 @@ def is_good_disc_name(name):
         return False
 
     if not name.startswith('CD'):
-        print("Folder '{}' does not start with 'CD'.".format(name))
+        print("Folder {!r} does not start with 'CD'.".format(name))
         return False
 
     folderNameMatch = re.search('^CD (?P<disc>\d+)( - (?P<additional>.+)){0,1}$',
                                 name)
 
     if not folderNameMatch:
-        print("Folder '{}' does not follow disc pattern: "
+        print("Folder {!r} does not follow disc pattern: "
               "CD 7 - Additional Description")
 
         try:
             int(name[-1:])
         except ValueError:
-            print("Folder '{}' does not end with a number.".format(name))
+            print("Folder {!r} does not end with a number.".format(name))
 
         return False
 
