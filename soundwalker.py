@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import argparse
 import os
 import re
 import sys
@@ -9,6 +10,16 @@ COVER_FILE_EXTENSIONS = set(['.jpg', '.jpeg'])
 
 _VALID_FILE_EXTENSIONS = tuple(SOUND_FILE_EXTENSIONS.union(COVER_FILE_EXTENSIONS))
 _FILENAME_REGEX = re.compile('^(?P<tracknumber>\d+)-(?P<artist>[a-zA-Z0-9_]+)-(?P<title>[a-zA-Z0-9_]+)\.(?P<fileextension>[a-zA-Z0-9]+)$')
+
+
+def runAsScript():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--artist-dir', dest="artist", action="store_true")
+    parser.add_argument('--album-dir', dest="album", action="store_true")
+    parser.add_argument('directory', nargs='?', default='.')
+    args = parser.parse_args()
+
+    walk(args.directory, is_artist=args.artist, is_album=args.album)
 
 
 def walk(path, *, is_artist=False, is_album=False):
@@ -128,9 +139,5 @@ def is_good_disc_name(name):
     return True
 
 if __name__ == '__main__':
-    try:
-        path = sys.argv[1]
-    except IndexError:
-        path = '.'
+    runAsScript()
 
-    walk(path)
