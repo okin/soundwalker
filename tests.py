@@ -18,40 +18,55 @@ import soundwalker
 import pytest
 
 
-@pytest.mark.parametrize("filename", [ 
-    '05-Cool_Artist-Song_B.ogg',
-    '05-cool_artist-song_b.mp3',
-    pytest.mark.xfail('foo.pdb'),
-    pytest.mark.xfail('foo.mp3.orig'),
-    pytest.mark.xfail('01 - titel.mp3'),
-    '02-Anthrax-Bring_The_Noise_(Feat._Public_Enemy).mp3',
+@pytest.mark.parametrize("filename", [
+    pytest.mark.xfail('05-Cool_Artist-Song_B.ogg'),
+    pytest.mark.xfail('05-cool_artist-song_b.mp3'),
+    'foo.pdb',
+    'foo.mp3.orig',
+    '01 - titel.mp3',
+    pytest.mark.xfail('02-Beewax-Bring_the_Queen_(Feat._Bee_Power).mp3'),
 ])
 def test_good_filename(filename):
-    assert soundwalker.is_good_file(filename)
+    for message in soundwalker.check_filename(filename):
+        print(message)
+        assert message
+        break
+    else:
+        pytest.fail("No message returned.")
 
 
 @pytest.mark.parametrize("name", [
-    pytest.mark.xfail(' Bla'),
-    pytest.mark.xfail('Bla '),
-    pytest.mark.xfail(' Bla '),
-    'Correctly Named (2015)',
-    'Double (2CD) (1989)',
+    ' Bla',
+    'Bla ',
+    ' Bla ',
+    pytest.mark.xfail('Correctly Named (2015)'),
+    pytest.mark.xfail('Twin - Double Disc (2CD) (1989)'),
 ])
 def test_album_name(name):
-    assert soundwalker.is_good_album_name(name)
+    for message in soundwalker.check_album_name(name):
+        print(message)
+        assert message
+        break
+    else:
+        pytest.fail("No message returned.")
 
 
 @pytest.mark.parametrize("name", [
-    pytest.mark.xfail(' CD 3 '),
-    pytest.mark.xfail('something'),
-    pytest.mark.xfail('foo 123'),
-    pytest.mark.xfail('disc 1'),
-    pytest.mark.xfail('CD 1 -'),
-    'CD 578',
-    "CD 75 - Additional Description",
+    ' CD 3 ',
+    'something',
+    'foo 123',
+    'disc 1',
+    'CD 1 -',
+    pytest.mark.xfail('CD 578'),
+    pytest.mark.xfail("CD 75 - Additional Description"),
 ])
-def test_disc_folder_nanimg(name):
-    assert soundwalker.is_good_disc_name(name)
+def test_disc_folder_naming(name):
+    for message in soundwalker.check_disc_name(name):
+        print(message)
+        assert message
+        break
+    else:
+        pytest.fail("No message returned.")
 
 
 @pytest.mark.parametrize("filenames", [
@@ -59,4 +74,9 @@ def test_disc_folder_nanimg(name):
     ['01-b.mp3', '01-a.mp3'],
 ])
 def test_finding_duplicates(filenames):
-    assert soundwalker.exist_duplicate_files(filenames)
+    message_retrieved = False
+    for message in soundwalker.exist_duplicate_files(filenames):
+        print(message)
+        message_retrieved = True
+
+    assert message_retrieved
