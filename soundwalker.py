@@ -66,8 +66,8 @@ def check_filename(name):
     if not name.endswith(_VALID_FILE_EXTENSIONS):
         yield "Additional file"
 
-    filenameMatch = _FILENAME_REGEX.match(name)
-    if filenameMatch is None:
+    match = _FILENAME_REGEX.match(name)
+    if match is None:
         for char in UNWANTED_CHARACTERS:
             if char in name:
                 yield "Unwanted character: {0!r}".format(char)
@@ -135,11 +135,9 @@ def check_disc_name(name):
         yield "Folder does not start with 'CD'."
         return
 
-    folderNameMatch = re.search('^CD (?P<disc>\d+)'
-                                '( - (?P<additional>.+)){0,1}$',
-                                name)
+    match = re.search('^CD (?P<disc>\d+)( - (?P<additional>.+)){0,1}$', name)
 
-    if not folderNameMatch:
+    if not match:
         yield ("Folder {!r} does not follow disc pattern: "
                "CD 7 - Additional Description")
 
