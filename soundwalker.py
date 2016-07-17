@@ -3,7 +3,6 @@
 import argparse
 import os
 import re
-import sys
 from itertools import chain
 
 UNWANTED_CHARACTERS = "',&äöüÄÖÜ"
