@@ -120,6 +120,11 @@ def check_album_name(name):
 
     if '(' not in name or ')' not in name:
         yield "Folder misses attributes - i.e. year.".format(name)
+    else:
+        try:
+            year = int(name.rsplit(')', 1)[0].rsplit('(', 1)[1])
+        except ValueError:
+            yield 'Folder must end with year in parenthesis - i.e. (1234)'
 
 
 def name_space_check(name):
