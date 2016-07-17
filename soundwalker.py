@@ -144,7 +144,8 @@ def check_disc_name(name):
         yield "Folder does not start with 'CD'."
         return
 
-    folderNameMatch = re.search('^CD (?P<disc>\d+)( - (?P<additional>.+)){0,1}$',
+    folderNameMatch = re.search('^CD (?P<disc>\d+)'
+                                '( - (?P<additional>.+)){0,1}$',
                                 name)
 
     if not folderNameMatch:
