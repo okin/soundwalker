@@ -14,7 +14,7 @@ _VALID_FILE_EXTENSIONS = tuple(SOUND_FILE_EXTENSIONS.union(set(COVER_FILE_EXTENS
 _FILENAME_REGEX = re.compile('^(?P<tracknumber>\d+)-(?P<artist>[a-zA-Z0-9_]+)-(?P<title>[a-zA-Z0-9_().-]+)\.(?P<fileextension>[a-zA-Z0-9]+)$')
 
 
-def runAsScript():
+def run_from_commandline():
     parser = argparse.ArgumentParser()
     parser.add_argument('--artist-dir', dest="artist", action="store_true")
     parser.add_argument('--album-dir', dest="album", action="store_true")
@@ -33,7 +33,7 @@ def walk(path, *, is_artist=False, is_album=False, include_fullpath=True):
         if entry.is_file():
             if entry.name.endswith(COVER_FILE_EXTENSIONS):
                 continue
-            messages = is_good_file(entry.name)
+            messages = check_filename(entry.name)
         elif entry.is_dir():
             process_artist = is_artist
             process_albums = is_album
@@ -62,8 +62,7 @@ def walk(path, *, is_artist=False, is_album=False, include_fullpath=True):
                 yield "{}: {}".format(entry.name, message)
 
 
-
-def is_good_file(name):
+def check_filename(name):
     if not name.endswith(_VALID_FILE_EXTENSIONS):
         yield "Additional file"
 
@@ -150,4 +149,4 @@ def check_disc_name(name):
             yield "Folder {!r} does not end with a number.".format(name)
 
 if __name__ == '__main__':
-    runAsScript()
+    run_from_commandline()
