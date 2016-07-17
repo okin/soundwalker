@@ -27,9 +27,6 @@ def runAsScript():
 
 
 def walk(path, *, is_artist=False, is_album=False, include_fullpath=True):
-    process_artist = False
-    process_albums = False
-
     for entry in os.scandir(path):
         if entry.name in SPECIAL_ENTRIES_TO_IGNORE:
             continue
@@ -39,29 +36,25 @@ def walk(path, *, is_artist=False, is_album=False, include_fullpath=True):
                 continue
             messages = is_good_file(entry.name)
         elif entry.is_dir():
+            process_artist = is_artist
+            process_albums = is_album
+
             messages = []
             if is_album:
+                messages = chain(messages, check_disc_name(entry.name))
+
                 filenames = set(f.name for f in os.scandir(entry.path) if f.is_file())
+                messages = chain(messages, exist_duplicate_files(filenames))
+            elif is_artist:
+                messages = chain(messages, check_album_name(entry.name))
+                process_albums = True
+            else:
+                process_artist = True
 
-                messages = exist_duplicate_files(filenames)
-                continue
-
-            for directory in (d for d in os.scandir(entry.path) if d.is_dir()):
-                if is_artist:
-                    messages = chain(messages, check_album_name(directory.name))
-                    process_albums = True
-                elif is_album:
-                    messages = chain(messages, check_disc_name(directory.name))
-                else:
-                    process_artist = True
-
-                dirMessages = ("{}/{}".format(directory.name, message)
-                               for message in walk(directory.path,
-                                                   is_artist=process_artist,
-                                                   is_album=process_albums,
-                                                   include_fullpath=False))
-
-                messages = chain(messages, dirMessages)
+            messages = chain(messages, walk(entry.path,
+                                            is_artist=process_artist,
+                                            is_album=process_albums,
+                                            include_fullpath=False))
 
         for message in messages:
             if include_fullpath:
