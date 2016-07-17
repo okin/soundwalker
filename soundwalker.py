@@ -1,10 +1,12 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 import argparse
 import os
 import re
 import sys
+from itertools import chain
 
+UNWANTED_CHARACTERS = "',&äöüÄÖÜ"
 SOUND_FILE_EXTENSIONS = set(['.mp3', '.cue', '.flac', '.ogg', '.m3u'])
 COVER_FILE_EXTENSIONS = ('.jpg', '.jpeg')
 
@@ -19,54 +21,76 @@ def runAsScript():
     parser.add_argument('directory', nargs='?', default='.')
     args = parser.parse_args()
 
-    walk(args.directory, is_artist=args.artist, is_album=args.album)
+    for message in walk(args.directory, is_artist=args.artist, is_album=args.album):
+        print(message)
 
 
-def walk(path, *, is_artist=False, is_album=False):
+def walk(path, *, is_artist=False, is_album=False, include_fullpath=True):
     process_artist = False
     process_albums = False
-    for (dirpath, directories, filenames) in os.walk(path):
-        for filename in filenames:
-            # TODO: handle files inside multi-disc-album
-            if filename.endswith(COVER_FILE_EXTENSIONS):
+
+    for entry in os.scandir(path):
+        if entry.name in ('Brian Eno', "Nine Inch Nails", "SHNARPH!", "va",
+                            "Samsas Traum", "Weena Morloch", "Unter Null",
+                            "Turbostaat", "Tool", "The Wohlstandskinder",
+                            "Woods of Ypres"):
+            continue
+
+        if entry.is_file():
+            if entry.name.endswith(COVER_FILE_EXTENSIONS):
+                continue
+            messages = is_good_file(entry.name)
+        elif entry.is_dir():
+            messages = []
+            if is_album:
+                filenames = set(f.name for f in os.scandir(entry.path) if f.is_file())
+
+                messages = exist_duplicate_files(filenames)
                 continue
 
-            is_good_file(filename)
+            for directory in (d for d in os.scandir(entry.path) if d.is_dir()):
+                if is_artist:
+                    messages = chain(messages, check_album_name(directory.name))
+                    process_albums = True
+                elif is_album:
+                    messages = chain(messages, check_disc_name(directory.name))
+                else:
+                    process_artist = True
 
-        if is_album:
-            exist_duplicate_files(filenames)
+                dirMessages = ("{}/{}".format(directory.name, message)
+                               for message in walk(directory.path,
+                                                   is_artist=process_artist,
+                                                   is_album=process_albums,
+                                                   include_fullpath=False))
 
-        for directory in directories:
-            if is_artist:
-                is_good_album_name(directory)
-                process_albums = True
-            elif is_album:
-                is_good_disc_name(directory)
+                messages = chain(messages, dirMessages)
+
+        for message in messages:
+            if include_fullpath:
+                yield "{}/{}".format(entry.path, message)
             else:
-                process_artist = True
+                yield "{}: {}".format(entry.name, message)
 
-            walk(os.path.join(dirpath, directory),
-                 is_artist=process_artist,
-                 is_album=process_albums)
 
 
 def is_good_file(name):
     if not name.endswith(_VALID_FILE_EXTENSIONS):
-        print("Additional file: {}".format(name))
-        return False
+        yield "Additional file"
 
     filenameMatch = _FILENAME_REGEX.match(name)
     if filenameMatch is None:
-        print("Filename {0!r} does not match the expected pattern: "
-              "02-Artist_A-Title_T.mp3".format(name))
-        return False
-
-    return True
+        for char in UNWANTED_CHARACTERS:
+            if char in name:
+                yield "Unwanted character: {0!r}".format(char)
+                break
+        else:
+            yield ("Filename does not match the expected pattern: "
+                   "02-Artist_A-Title_T.mp3".format(name))
 
 
 def exist_duplicate_files(filenames):
-    if not len(filenames) == len(set(name.lower() for name in filenames)):
-        return True
+    # if not len(filenames) == len(set(name.lower() for name in filenames)):
+    #     return  # Fast check succeeded
 
     duplicate_numbers = set()
     track_numbers = {}
@@ -78,69 +102,56 @@ def exist_duplicate_files(filenames):
             try:
                 number = int(name.split('-')[0])
             except (ValueError, IndexError):
-                print("Unable to get track# for {0}".format(name))
-                number = 0
+                yield "Unable to get track# for {0}".format(name)
+                continue
 
         if number in track_numbers:
-            print("Duplicate track number {num!r} on files "
-                  "{0!r} and {1}".format(track_numbers[number],
-                                         name, num=number))
+            yield ("Duplicate track number {num!r} on files "
+                   "{0!r} and {1}".format(track_numbers[number],
+                                          name, num=number))
             duplicate_numbers.add(number)
         else:
             track_numbers[number] = name
 
-    return bool(duplicate_numbers)
+    # TODO: duplicate check!
+    # return bool(duplicate_numbers)
 
 
-def is_good_album_name(name):
-    if not name_must_not_be_stripped(name):
-        return False
+def check_album_name(name):
+    yield from name_space_check(name)
 
     if '(' not in name or ')' not in name:
-        print("Folder {!r} misses attributes - i.e. year.".format(name))
-        return False
-
-    return True
+        yield "Folder misses attributes - i.e. year.".format(name)
 
 
-def name_must_not_be_stripped(name):
+def name_space_check(name):
     if not name == name.strip():
         if name.endswith(' ') and name.endswith(' '):
-            print("Folder {!r} has spaces at front and end.".format(name))
+            yield "Folder has spaces at front and end.".format(name)
         elif name.startswith(' '):
-            print("Folder {!r} has spaces at front.".format(name))
+            yield "Folder has spaces at front.".format(name)
         elif name.endswith(' '):
-            print("Folder {!r} has spaces at end.".format(name))
-
-        return False
-
-    return True
+            yield "Folder has spaces at end.".format(name)
 
 
-def is_good_disc_name(name):
-    if not name_must_not_be_stripped(name):
-        return False
+def check_disc_name(name):
+    yield from name_space_check(name)
 
     if not name.startswith('CD'):
-        print("Folder {!r} does not start with 'CD'.".format(name))
-        return False
+        yield "Folder {!r} does not start with 'CD'.".format(name)
+        return
 
     folderNameMatch = re.search('^CD (?P<disc>\d+)( - (?P<additional>.+)){0,1}$',
                                 name)
 
     if not folderNameMatch:
-        print("Folder {!r} does not follow disc pattern: "
-              "CD 7 - Additional Description")
+        yield ("Folder {!r} does not follow disc pattern: "
+               "CD 7 - Additional Description")
 
         try:
             int(name[-1:])
         except ValueError:
-            print("Folder {!r} does not end with a number.".format(name))
-
-        return False
-
-    return True
+            yield "Folder {!r} does not end with a number.".format(name)
 
 if __name__ == '__main__':
     runAsScript()
-
