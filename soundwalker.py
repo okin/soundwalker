@@ -74,7 +74,7 @@ def check_filename(name):
                 break
         else:
             yield ("Filename does not match the expected pattern: "
-                   "02-Artist_A-Title_T.mp3".format(name))
+                   "02-Artist_A-Title_T.mp3")
 
 
 def exist_duplicate_files(filenames):
@@ -110,7 +110,7 @@ def check_album_name(name):
     yield from name_space_check(name)
 
     if '(' not in name or ')' not in name:
-        yield "Folder misses attributes - i.e. year.".format(name)
+        yield "Folder misses attributes - i.e. year."
     else:
         try:
             int(name.rsplit(')', 1)[0].rsplit('(', 1)[1])
@@ -121,11 +121,11 @@ def check_album_name(name):
 def name_space_check(name):
     if not name == name.strip():
         if name.endswith(' ') and name.endswith(' '):
-            yield "Folder has spaces at front and end.".format(name)
+            yield "Folder has spaces at front and end."
         elif name.startswith(' '):
-            yield "Folder has spaces at front.".format(name)
+            yield "Folder has spaces at front."
         elif name.endswith(' '):
-            yield "Folder has spaces at end.".format(name)
+            yield "Folder has spaces at end."
 
 
 def check_disc_name(name):
