@@ -9,6 +9,7 @@ from itertools import chain
 UNWANTED_CHARACTERS = "',&äöüÄÖÜ"
 SOUND_FILE_EXTENSIONS = set(['.mp3', '.cue', '.flac', '.ogg', '.m3u'])
 COVER_FILE_EXTENSIONS = ('.jpg', '.jpeg')
+SPECIAL_ENTRIES_TO_IGNORE = set(('@eaDir', '.DS_Store'))
 
 _VALID_FILE_EXTENSIONS = tuple(SOUND_FILE_EXTENSIONS.union(set(COVER_FILE_EXTENSIONS)))
 _FILENAME_REGEX = re.compile('^(?P<tracknumber>\d+)-(?P<artist>[a-zA-Z0-9_]+)-(?P<title>[a-zA-Z0-9_().-]+)\.(?P<fileextension>[a-zA-Z0-9]+)$')
@@ -30,10 +31,7 @@ def walk(path, *, is_artist=False, is_album=False, include_fullpath=True):
     process_albums = False
 
     for entry in os.scandir(path):
-        if entry.name in ('Brian Eno', "Nine Inch Nails", "SHNARPH!", "va",
-                            "Samsas Traum", "Weena Morloch", "Unter Null",
-                            "Turbostaat", "Tool", "The Wohlstandskinder",
-                            "Woods of Ypres"):
+        if entry.name in SPECIAL_ENTRIES_TO_IGNORE:
             continue
 
         if entry.is_file():
