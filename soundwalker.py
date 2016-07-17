@@ -23,7 +23,7 @@ def runAsScript():
     args = parser.parse_args()
 
     for message in walk(args.directory, is_artist=args.artist, is_album=args.album):
-        print(message)
+        print(message.encode("utf-8", "surrogateescape").decode('utf8', 'replace'))
 
 
 def walk(path, *, is_artist=False, is_album=False, include_fullpath=True):
